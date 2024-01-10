@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mytodo/utils/myButton.dart';
 
+// ignore: must_be_immutable
 class MyDialogBox extends StatelessWidget {
-  const MyDialogBox({super.key});
+  final TextEditingController controller;
+  VoidCallback onsave;
+  VoidCallback oncancle;
+  MyDialogBox({super.key,required this.controller,required this.onsave,required this.oncancle});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -17,6 +21,7 @@ class MyDialogBox extends StatelessWidget {
               SizedBox(height: 20,),
               Expanded(
                 child:TextField(
+                  controller: controller,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -26,10 +31,11 @@ class MyDialogBox extends StatelessWidget {
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  MyButton(text: "Add", onPressed: (){}),
+                  MyButton(text: "Add", onPressed: onsave),
                   SizedBox(width: 20,),
-                  MyButton(text: "Cancle", onPressed: (){}),
+                  MyButton(text: "Cancle", onPressed: oncancle),
                 ],
               )
             ],

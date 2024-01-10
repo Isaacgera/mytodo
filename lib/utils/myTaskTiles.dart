@@ -5,12 +5,14 @@ class taskTile extends StatelessWidget {
   final String taskname;
   final bool isCompleted; 
   Function(bool?)? onChanged;
+  VoidCallback onTap;
   taskTile(
     {
       super.key,
       required this.taskname,
       required this.isCompleted,
-      required this.onChanged
+      required this.onChanged,
+      required this.onTap,
     }
   );
   @override
@@ -28,7 +30,17 @@ class taskTile extends StatelessWidget {
               SizedBox(width: 12.0,),
               Checkbox(value: isCompleted, onChanged: onChanged,activeColor: Colors.black),
               SizedBox(width: 8.0,),
-              Expanded(child: RichText(text: TextSpan(text: taskname,style:isCompleted?TextStyle(decoration: TextDecoration.lineThrough):TextStyle(decoration: TextDecoration.none)),),)
+              Expanded(child: RichText(text: TextSpan(text: taskname,style:isCompleted?TextStyle(decoration: TextDecoration.lineThrough):TextStyle(decoration: TextDecoration.none)),),),
+              SizedBox(width: 8,),
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: GestureDetector(
+                  onTap:onTap,
+                  child:Container(
+                    child: Icon(Icons.delete),
+                  )
+                ),
+              )
             ],
           ),
       ),

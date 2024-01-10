@@ -33,10 +33,10 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
+
+    final textEditingController =TextEditingController();
     List myTasks=[
-      ["Java is a multi-platform",true],
-      ["Java",false],
-      ["multi-platform",true],
+    ['Task',false],
     ];
 
     void checkBoxClicked(bool? value,int index)
@@ -46,26 +46,76 @@ class _homePageState extends State<homePage> {
       });
     }
 
+    void savenewtask()
+    {
+      setState(() {
+        myTasks.add([textEditingController.text,false]);
+        Navigator.of(context).pop();
+        textEditingController.text="";
+      });
+    }
+
     void addTask(){
       showDialog(context: context, builder: (context){
-        return MyDialogBox();
+        return MyDialogBox(controller:textEditingController,onsave: () => savenewtask(),oncancle:()=> Navigator.of(context).pop());
       });
+    }
+    void deleteTask(int index)
+    {
+      setState(() {
+        //delete
+        myTasks.removeAt(index);
+      });
+    }
+
+    void reorder(int oldindex,int newindex)
+    {
+      setState(() {
+        if(newindex>oldindex)
+        {
+          newindex--;
+        }
+        List tmp=myTasks[oldindex];
+        myTasks.removeAt(oldindex);
+        myTasks.insert(newindex,tmp);
+      });
+    }
+    Widget proxyDecorator(Widget child,int index,Animation<double> animation){
+      return AnimatedBuilder(
+        animation: animation, 
+        builder: (BuildContext context,Widget? child){
+          return Material(
+            elevation: 0,
+            child: child,
+            color: Colors.transparent,
+          );
+        },
+        child: child,
+      );
     }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("MY TO DO LIST",style: TextStyle(letterSpacing: 2.0,wordSpacing: 3.0),),
+        title: const Text("MY TO DO LIST",style: TextStyle(letterSpacing: 2.0,wordSpacing: 3.0,fontWeight: FontWeight.bold),),
         backgroundColor: Colors.blue,
         centerTitle: true,
         elevation: 0,
       ),
-      body:ListView.builder(
-        itemCount:myTasks.length,
-        itemBuilder: (context, index) {
-          return taskTile(taskname: myTasks[index][0], isCompleted: myTasks[index][1], onChanged: (value)=>checkBoxClicked(value,index));
-        },
+      body:ReorderableListView.builder(
+        proxyDecorator:proxyDecorator,
+        itemCount: myTasks.length,
+        onReorder:(i,j)=>reorder(i,j),
+        itemBuilder:(BuildContext context,int index){
+          return taskTile(
+            key: Key('${index}'),
+            taskname: myTasks[index][0],
+             isCompleted: myTasks[index][1], 
+             onChanged: (value)=>checkBoxClicked(value,index),
+             onTap:()=>deleteTask(index)
+            );
+        }
       ),
       backgroundColor: Colors.blue[200],
       floatingActionButton: FloatingActionButton(
